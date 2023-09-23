@@ -1,0 +1,2 @@
+# legibold
+Legibold Firefox extension
