@@ -14,20 +14,37 @@ function getBoldCharCount(length) {
 // Loop through text elements
 for (let element of textElements) {
   // Split text into words
-  const words = element.innerText.split(/\s+/);
+  const words = element.textContent.split(/\s+/);
 
   // Create span-wrapped words
   const spanWrappedWords = words.map(word => {
     const boldCharCount = getBoldCharCount(word.length);
 
-    if (boldCharCount <= 0) return word; // No characters to bold
+    if (boldCharCount <= 0) return document.createTextNode(word); // No characters to bold
 
-    const boldPart = word.slice(0, boldCharCount);
-    const restOfWord = word.slice(boldCharCount);
+    const boldPart = document.createElement('span');
+    boldPart.style.fontWeight = 'bold';
+    boldPart.textContent = word.slice(0, boldCharCount);
 
-    return `<span style="font-weight: bold;">${boldPart}</span>${restOfWord}`;
+    const restOfWord = document.createTextNode(word.slice(boldCharCount));
+
+    // Create a document fragment to hold both parts
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(boldPart);
+    fragment.appendChild(restOfWord);
+
+    return fragment;
   });
 
-  // Join words back and set innerHTML
-  element.innerHTML = spanWrappedWords.join(' ');
+  // Clear the content of the element
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+
+  // Append the span-wrapped words to the element
+  spanWrappedWords.forEach(word => {
+    element.appendChild(word);
+    element.appendChild(document.createTextNode(' ')); // Add space between words
+  });
 }
+
